@@ -53,7 +53,7 @@ KK-Computers-Website/
    - **GitHub Pages**: Push to `main` branch and enable Pages from repo settings.
 
 ## Live Website Link
-[Click here to watch the demo](https://extraordinary-fairy-f03d1f.netlify.app)
+[Click here see](https://extraordinary-fairy-f03d1f.netlify.app)
 
 ## Team Submission
 - **Team Name**: TECH AURA
