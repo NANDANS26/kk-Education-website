@@ -52,7 +52,7 @@ KK-Computers-Website/
 3. To deploy:
    - **GitHub Pages**: Push to `main` branch and enable Pages from repo settings.
 
-## Demo Video
+## Live Website Link
 [Click here to watch the demo](https://extraordinary-fairy-f03d1f.netlify.app)
 
 ## Team Submission
