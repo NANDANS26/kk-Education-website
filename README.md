@@ -46,14 +46,14 @@ KK-Computers-Website/
 ## Setup Instructions
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/kk-computers-website.git
+   git clone https://github.com/NANDANS26/kk-Education-website.git
    ```
 2. Open `index.html` in your browser.
 3. To deploy:
    - **GitHub Pages**: Push to `main` branch and enable Pages from repo settings.
 
 ## Demo Video
-[Click here to watch the demo](https://your-demo-link-here)
+[Click here to watch the demo](https://extraordinary-fairy-f03d1f.netlify.app)
 
 ## Team Submission
 - **Team Name**: TECH AURA
@@ -65,4 +65,4 @@ KK-Computers-Website/
 All assets (images, content, and branding) were provided as per hackathon guidelines. This project was built with creativity, responsiveness, and accessibility in mind.
 
 ---
-**Made with ❤️ by [Your Team Name] for Hack The Web**
+**Made with ❤️ by TECH AURA for Hack The Web**
