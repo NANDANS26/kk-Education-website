@@ -4,6 +4,7 @@
 class Chatbot {
     constructor() {
         this.isOpen = false;
+        this.isMobile = window.innerWidth <= 768;
         this.responses = {
             'hello': 'Hello! Welcome to KK Computers. How can I help you today?',
             'hi': 'Hi there! I\'m here to help you with any questions about our courses.',
@@ -27,12 +28,15 @@ class Chatbot {
     }
 
     createChatbot() {
+        const windowWidth = this.isMobile ? '280px' : '350px';
+        const windowHeight = this.isMobile ? '350px' : '500px';
+        
         const chatbotHTML = `
             <div class="chatbot-container">
                 <button class="chatbot-toggle" id="chatbot-toggle">
                     <i class="fas fa-comments"></i>
                 </button>
-                <div class="chatbot-window" id="chatbot-window">
+                <div class="chatbot-window" id="chatbot-window" style="width: ${windowWidth}; height: ${windowHeight};">
                     <div class="chatbot-header">
                         <h4>KK Computers Assistant</h4>
                         <small>Ask me anything about our courses!</small>
@@ -64,12 +68,23 @@ class Chatbot {
             if (e.key === 'Enter') this.sendMessage();
         });
 
-        // Close chatbot when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.chatbot-container') && this.isOpen) {
-                this.toggleChatbot();
-            }
-        });
+        // Close chatbot when clicking outside (desktop only)
+        if (!this.isMobile) {
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.chatbot-container') && this.isOpen) {
+                    this.toggleChatbot();
+                }
+            });
+        }
+        
+        // Handle mobile keyboard
+        if (this.isMobile) {
+            input.addEventListener('focus', () => {
+                setTimeout(() => {
+                    window.scrollTop = window.scrollHeight;
+                }, 300);
+            });
+        }
     }
 
     toggleChatbot() {
@@ -128,6 +143,7 @@ class Chatbot {
 // Enhanced Gallery with Location Data
 class EnhancedGallery {
     constructor() {
+        this.isMobile = window.innerWidth <= 768;
         this.galleryData = {
             'guntur-1': {
                 title: 'Guntur Campus - Main Building',
@@ -173,18 +189,31 @@ class EnhancedGallery {
             const dataKey = `${item.dataset.location}-${index + 1}`;
             item.dataset.info = dataKey;
             
-            // Add overlay
-            const overlay = document.createElement('div');
-            overlay.className = 'gallery-overlay';
-            overlay.innerHTML = `
-                <h4>${this.galleryData[dataKey]?.title || 'KK Computers Facility'}</h4>
-                <p>${this.galleryData[dataKey]?.students || 'Student Activity'}</p>
-            `;
-            item.appendChild(overlay);
+            // Add overlay only on desktop
+            if (!this.isMobile) {
+                const overlay = document.createElement('div');
+                overlay.className = 'gallery-overlay';
+                overlay.innerHTML = `
+                    <h4>${this.galleryData[dataKey]?.title || 'KK Computers Facility'}</h4>
+                    <p>${this.galleryData[dataKey]?.students || 'Student Activity'}</p>
+                `;
+                item.appendChild(overlay);
+            }
             
             item.addEventListener('click', () => {
                 this.openEnhancedLightbox(item);
             });
+            
+            // Add touch feedback for mobile
+            if (this.isMobile) {
+                item.addEventListener('touchstart', () => {
+                    item.style.transform = 'scale(0.98)';
+                });
+                
+                item.addEventListener('touchend', () => {
+                    item.style.transform = '';
+                });
+            }
         });
     }
 
@@ -821,6 +850,7 @@ class TypewriterEffect {
 class MobileMenu {
     constructor() {
         this.isOpen = false;
+        this.overlay = null;
         this.init();
     }
 
@@ -829,16 +859,17 @@ class MobileMenu {
         const mobileMenu = document.getElementById('mobile-menu');
         
         if (!menuBtn || !mobileMenu) return;
+        
+        // Create overlay for mobile menu
+        this.createOverlay();
 
         menuBtn.addEventListener('click', () => {
             this.toggle(mobileMenu);
         });
 
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!menuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-                this.close(mobileMenu);
-            }
+        // Close menu when clicking on overlay
+        this.overlay.addEventListener('click', () => {
+            this.close(mobileMenu);
         });
 
         // Close menu on escape key
@@ -847,6 +878,32 @@ class MobileMenu {
                 this.close(mobileMenu);
             }
         });
+        
+        // Close menu when clicking on menu links
+        const menuLinks = mobileMenu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                this.close(mobileMenu);
+            });
+        });
+    }
+    
+    createOverlay() {
+        this.overlay = document.createElement('div');
+        this.overlay.className = 'mobile-menu-overlay';
+        this.overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        `;
+        document.body.appendChild(this.overlay);
     }
 
     toggle(menu) {
@@ -859,12 +916,18 @@ class MobileMenu {
 
     open(menu) {
         menu.classList.remove('hidden');
+        this.overlay.style.opacity = '1';
+        this.overlay.style.visibility = 'visible';
         menu.style.animation = 'slideInUp 0.3s ease';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
         this.isOpen = true;
     }
 
     close(menu) {
         menu.style.animation = 'slideInUp 0.3s ease reverse';
+        this.overlay.style.opacity = '0';
+        this.overlay.style.visibility = 'hidden';
+        document.body.style.overflow = ''; // Restore scrolling
         setTimeout(() => {
             menu.classList.add('hidden');
         }, 300);
@@ -1006,6 +1069,29 @@ class NavigationEffects {
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if device is mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    // Reduce animations on mobile for better performance
+    if (isMobile) {
+        // Disable complex animations on mobile
+        const complexAnimations = document.querySelectorAll('.floating, .animate-float, .animate-pulse');
+        complexAnimations.forEach(element => {
+            element.style.animation = 'none';
+        });
+        
+        // Reduce particle count on mobile
+        const particlesContainer = document.querySelector('.particles-bg');
+        if (particlesContainer) {
+            const particles = particlesContainer.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                if (index > 10) { // Keep only first 10 particles on mobile
+                    particle.remove();
+                }
+            });
+        }
+    }
+    
     // Initialize all components
     new Chatbot();
     new EnhancedGallery();
@@ -1035,12 +1121,50 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize AOS if available
     if (typeof AOS !== 'undefined') {
         AOS.init({
-            duration: 800,
+            duration: isMobile ? 400 : 800,
             once: true,
             offset: 50,
-            easing: 'ease-out-cubic'
+            easing: 'ease-out-cubic',
+            disable: isMobile ? 'mobile' : false
         });
     }
+    
+    // Handle orientation change
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            // Refresh AOS on orientation change
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+            
+            // Adjust chatbot position
+            const chatbot = document.querySelector('.chatbot-window');
+            if (chatbot && chatbot.classList.contains('active')) {
+                chatbot.style.display = 'none';
+                setTimeout(() => {
+                    chatbot.style.display = 'flex';
+                }, 100);
+            }
+        }, 100);
+    });
+    
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            // Refresh AOS on resize
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+            
+            // Update mobile detection
+            const newIsMobile = window.innerWidth <= 768;
+            if (newIsMobile !== isMobile) {
+                location.reload(); // Reload page if mobile state changes
+            }
+        }, 250);
+    });
 
     console.log('🚀 KK Computers Website Enhanced - All systems operational!');
 });
